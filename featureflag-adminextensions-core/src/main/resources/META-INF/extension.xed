@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension xmlns="http://www.xwiki.org/xwiki/extension">
+    <id>com.xwiki.featureflag:featureflag-adminextensions-core</id>
+    <name>Admin Extensions Feature Flag Core</name>
+    <type>jar</type>
+    <version>1.0.0</version>
+
+    <summary>Core components for Admin Extensions feature flag</summary>
+    <description>
+        This extension provides the core Java components for the Admin Extensions feature flag.
+        It includes configuration management, right checking, and UI extension points.
+    </description>
+
+    <authors>
+        <author>
+            <name>XWiki Contributors</name>
+            <url>https://www.xwiki.org</url>
+        </author>
+    </authors>
+
+    <licenses>
+        <license>
+            <name>LGPL 2.1</name>
+            <url>https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
+        </license>
+    </licenses>
+
+    <features>
+        <feature>featureflag</feature>
+        <feature>administration</feature>
+        <feature>security</feature>
+    </features>
+
+    <scm>
+        <connection>scm:git:git@github.com:xwiki-contrib/featureflag-adminextensions.git</connection>
+        <url>https://github.com/xwiki-contrib/featureflag-adminextensions</url>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/xwiki-contrib/featureflag-adminextensions/issues</url>
+    </issueManagement>
+
+    <dependencies>
+        <dependency>
+            <id>org.xwiki.platform:xwiki-platform-core</id>
+            <version>[15.0,)</version>
+        </dependency>
+        <dependency>
+            <id>org.xwiki.platform:xwiki-platform-configuration-api</id>
+            <version>[15.0,)</version>
+        </dependency>
+        <dependency>
+            <id>org.xwiki.platform:xwiki-platform-security-authorization-api</id>
+            <version>[15.0,)</version>
+        </dependency>
+    </dependencies>
+
+    <components>
+        <component>
+            <roleType>com.xwiki.featureflag.adminextensions.AdminExtensionsManager</roleType>
+            <roleHint>default</roleHint>
+            <implementation>com.xwiki.featureflag.adminextensions.internal.AdminExtensionsConfiguration</implementation>
+        </component>
+        <component>
+            <roleType>org.xwiki.security.authorization.RightChecker</roleType>
+            <roleHint>adminExtensions</roleHint>
+            <implementation>com.xwiki.featureflag.adminextensions.internal.AdminExtensionsRightChecker</implementation>
+        </component>
+        <component>
+            <roleType>org.xwiki.script.service.ScriptService</roleType>
+            <roleHint>adminExtensionsUI</roleHint>
+            <implementation>com.xwiki.featureflag.adminextensions.internal.AdminExtensionsUIExtension</implementation>
+        </component>
+    </components>
+</extension>

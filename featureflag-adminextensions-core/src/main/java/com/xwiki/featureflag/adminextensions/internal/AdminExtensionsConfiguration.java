@@ -1,4 +1,85 @@
-package com.xwiki.featureflag.adminextensions;
+package com.xwiki.featureflag.adminextensions.internal;
 
-public class AdminExtensionsConfiguration {
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.slf4j.Logger;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.configuration.ConfigurationSource;
+
+import com.xwiki.featureflag.adminextensions.AdminExtensionsManager;
+
+/**
+ * Implementation of AdminExtensionsManager that reads configuration from xwiki.properties.
+ */
+@Component
+@Singleton
+public class AdminExtensionsConfiguration implements AdminExtensionsManager {
+
+    private static final String CONFIG_PROPERTY = "featureflag.adminextensions.enabled";
+    private static final String ENV_PROPERTY = "XWIKI_FEATUREFLAG_EXTENSIONS_ENABLED";
+
+    @Inject
+    @Named("xwikiproperties")
+    private ConfigurationSource configurationSource;
+
+    @Inject
+    private Logger logger;
+
+    private Boolean enabledCache = null;
+    private String configSource = null;
+
+    @Override
+    public boolean isEnabled() {
+        if (enabledCache == null) {
+            refresh();
+        }
+        return enabledCache;
+    }
+
+    @Override
+    public String getConfigurationSource() {
+        if (configSource == null) {
+            refresh();
+        }
+        return configSource;
+    }
+
+    @Override
+    public boolean hasAccess() {
+        return isEnabled();
+    }
+
+    @Override
+    public void refresh() {
+        try {
+            // Check environment variable first
+            String envValue = System.getenv(ENV_PROPERTY);
+            if (envValue != null) {
+                enabledCache = Boolean.parseBoolean(envValue);
+                configSource = "environment variable " + ENV_PROPERTY;
+                logger.debug("Admin Extensions feature flag read from environment: {}", enabledCache);
+                return;
+            }
+
+            // Check xwiki.properties
+            if (configurationSource.containsKey(CONFIG_PROPERTY)) {
+                enabledCache = configurationSource.getProperty(CONFIG_PROPERTY, false);
+                configSource = "xwiki.properties property " + CONFIG_PROPERTY;
+                logger.debug("Admin Extensions feature flag read from xwiki.properties: {}", enabledCache);
+                return;
+            }
+
+            // Default value
+            enabledCache = false;
+            configSource = "default (disabled)";
+            logger.debug("Admin Extensions feature flag using default value: {}", enabledCache);
+
+        } catch (Exception e) {
+            logger.error("Error reading Admin Extensions feature flag configuration", e);
+            enabledCache = false;
+            configSource = "error, using default (disabled)";
+        }
+    }
 }

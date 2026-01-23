@@ -1,0 +1,11 @@
+# Configuration Component
+com.xwiki.featureflag.adminextensions.internal.AdminExtensionsConfiguration
+
+# Right Checker Component
+com.xwiki.featureflag.adminextensions.internal.AdminExtensionsRightChecker
+
+# UI Extension Component
+com.xwiki.featureflag.adminextensions.internal.AdminExtensionsUIExtension
+
+# Script Service Registration
+org.xwiki.script.service.ScriptService|adminExtensionsUI
