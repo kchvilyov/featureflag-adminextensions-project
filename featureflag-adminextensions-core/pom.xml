@@ -77,6 +77,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.xwiki.rendering</groupId>
+            <artifactId>xwiki-rendering-transformation-macro</artifactId>
+            <version>${xwiki.version}</version>
+<!--            <scope>provided</scope>-->
+        </dependency>
+
         <!-- Velocity -->
         <dependency>
             <groupId>org.xwiki.platform</groupId>
@@ -100,12 +107,12 @@
         </dependency>
 
         <!-- Testing -->
-        <dependency>
-            <groupId>org.xwiki.platform</groupId>
-            <artifactId>xwiki-platform-test</artifactId>
-            <version>${xwiki.version}</version>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.xwiki.platform</groupId>-->
+<!--            <artifactId>xwiki-platform-test</artifactId>-->
+<!--            <version>${xwiki.version}</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.xwiki.platform</groupId>

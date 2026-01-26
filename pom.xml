@@ -26,8 +26,8 @@
         <java.version>17</java.version>
 
         <!-- Версии зависимостей -->
-        <xwiki.version>17.10.1</xwiki.version>
-        <xwiki.compatibility.version>[17.10.1,)</xwiki.compatibility.version>
+        <xwiki.version>17.10.2</xwiki.version>
+        <xwiki.compatibility.version>[17.10.2,)</xwiki.compatibility.version>
 
         <!-- Плагины -->
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
@@ -44,7 +44,6 @@
         <junit.version>5.9.3</junit.version>
         <mockito.version>5.3.1</mockito.version>
     </properties>
-
 
     <repositories>
         <repository>
@@ -79,8 +78,31 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- Добавляем xwiki-rendering-api с управлением версии из родителя -->
+            <dependency>
+                <groupId>org.xwiki.rendering</groupId>
+                <artifactId>xwiki-rendering-api</artifactId>
+                <version>${xwiki.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.xwiki.platform</groupId>
+                <artifactId>xwiki-platform-test-ui</artifactId>
+                <version>${xwiki.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
-        <!-- Общие зависимости для всех модулей -->
+        <!-- Общие тестовые зависимости -->
+        <dependency>
+            <groupId>org.xwiki.platform</groupId>
+            <artifactId>xwiki-platform-test-ui</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
