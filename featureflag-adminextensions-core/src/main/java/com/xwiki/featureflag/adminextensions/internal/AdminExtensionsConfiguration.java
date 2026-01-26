@@ -5,13 +5,12 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
-import org.xwiki.user.CurrentUser;
-import org.xwiki.user.UserReferenceResolver;
 
 import com.xwiki.featureflag.adminextensions.AdminExtensionsManager;
 
@@ -36,7 +35,7 @@ public class AdminExtensionsConfiguration implements AdminExtensionsManager {
     private AuthorizationManager authorizationManager;
 
     @Inject
-    private UserReferenceResolver<CurrentUser> userReferenceResolver;
+    private DocumentAccessBridge documentAccessBridge;
 
     private Boolean enabledCache = null;
     private String configSource = null;
@@ -63,8 +62,7 @@ public class AdminExtensionsConfiguration implements AdminExtensionsManager {
             return false;
         }
         try {
-            CurrentUser currentUser = userReferenceResolver.resolve(CurrentUserReference.INSTANCE);
-            DocumentReference userRef = currentUser.getUserReference();
+            DocumentReference userRef = documentAccessBridge.getCurrentUserReference();
             DocumentReference extensionsPage = new DocumentReference("xwiki", "XWiki", "XWikiExtensions");
             return authorizationManager.hasAccess(Right.ADMIN, userRef, extensionsPage);
         } catch (Exception e) {

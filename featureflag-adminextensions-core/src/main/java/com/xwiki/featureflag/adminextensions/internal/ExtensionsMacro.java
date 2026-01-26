@@ -7,11 +7,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.jspecify.annotations.NonNull;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rendering.block.Block;
-import org.xwiki.rendering.block.MacroBlock;
 import org.xwiki.rendering.macro.Macro;
-import org.xwiki.rendering.macro.MacroExecutionException;
 import org.xwiki.rendering.macro.descriptor.MacroDescriptor;
 import org.xwiki.rendering.transformation.MacroTransformationContext;
 
@@ -26,15 +25,12 @@ public class ExtensionsMacro implements Macro<Void> {
     private AdminExtensionsManager extensionsManager;
 
     @Override
-    public List<Block> execute(Void configuration, String content, MacroTransformationContext context)
-        throws MacroExecutionException
-    {
-        // If access is granted, we return null to let normal transformation continue
-        // If not, we return empty list to render nothing
-        if (extensionsManager.isEnabled() && extensionsManager.hasAccess()) {
-            return null; // ✅ Let XWiki process the macro content normally
+    public List<Block> execute(Void configuration, String content, MacroTransformationContext context) {
+        // Блокируем, если флаг выключен или нет прав
+        if (extensionsManager.hasAccess()) {
+            return null; // Продолжить обработку
         } else {
-            return Collections.emptyList(); // ❌ Render nothing
+            return Collections.emptyList(); // Пусто
         }
     }
 
@@ -54,7 +50,7 @@ public class ExtensionsMacro implements Macro<Void> {
     }
 
     @Override
-    public int compareTo(Macro<?> o) {
+    public int compareTo(@NonNull Macro<?> o) {
         return 0;
     }
 }

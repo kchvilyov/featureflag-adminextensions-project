@@ -60,6 +60,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.xwiki.platform</groupId>
+            <artifactId>xwiki-platform-bridge</artifactId>
+            <version>${xwiki.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Configuration -->
         <dependency>
             <groupId>org.xwiki.platform</groupId>
