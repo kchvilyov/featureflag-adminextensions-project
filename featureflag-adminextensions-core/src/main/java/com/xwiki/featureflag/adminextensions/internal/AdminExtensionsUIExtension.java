@@ -16,7 +16,6 @@ import com.xwiki.featureflag.adminextensions.AdminExtensionsManager;
 @Named("featureflag/extensions")
 @Singleton
 public class AdminExtensionsUIExtension implements ScriptService {
-
     @Inject
     private AdminExtensionsManager extensionsManager;
 
@@ -41,6 +40,4 @@ public class AdminExtensionsUIExtension implements ScriptService {
     public boolean hasAccess() {
         return extensionsManager.hasAccess();
     }
-
-    // Removed renderIfEnabled() — it belongs in a Macro, not a ScriptService
 }

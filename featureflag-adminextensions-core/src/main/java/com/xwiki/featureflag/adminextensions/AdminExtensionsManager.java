@@ -12,7 +12,8 @@ import org.xwiki.stability.Unstable;
 public interface AdminExtensionsManager {
 
     /**
-     * Check if the Extensions admin section is enabled.
+     * Check if the feature is enabled in configuration.
+     * Does not consider user rights.
      *
      * @return true if enabled, false otherwise
      */
@@ -26,7 +27,8 @@ public interface AdminExtensionsManager {
     String getConfigurationSource();
 
     /**
-     * Check if user has access to Extensions admin section.
+     * Check if current user has access to Extensions admin section.
+     * Combines feature flag state and user rights.
      *
      * @return true if user has access, false otherwise
      */

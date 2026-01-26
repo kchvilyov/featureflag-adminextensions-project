@@ -7,6 +7,11 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.security.authorization.AuthorizationManager;
+import org.xwiki.security.authorization.Right;
+import org.xwiki.user.CurrentUser;
+import org.xwiki.user.UserReferenceResolver;
 
 import com.xwiki.featureflag.adminextensions.AdminExtensionsManager;
 
@@ -26,6 +31,12 @@ public class AdminExtensionsConfiguration implements AdminExtensionsManager {
 
     @Inject
     private Logger logger;
+
+    @Inject
+    private AuthorizationManager authorizationManager;
+
+    @Inject
+    private UserReferenceResolver<CurrentUser> userReferenceResolver;
 
     private Boolean enabledCache = null;
     private String configSource = null;
@@ -48,7 +59,18 @@ public class AdminExtensionsConfiguration implements AdminExtensionsManager {
 
     @Override
     public boolean hasAccess() {
-        return isEnabled();
+        if (!isEnabled()) {
+            return false;
+        }
+        try {
+            CurrentUser currentUser = userReferenceResolver.resolve(CurrentUserReference.INSTANCE);
+            DocumentReference userRef = currentUser.getUserReference();
+            DocumentReference extensionsPage = new DocumentReference("xwiki", "XWiki", "XWikiExtensions");
+            return authorizationManager.hasAccess(Right.ADMIN, userRef, extensionsPage);
+        } catch (Exception e) {
+            logger.warn("Could not check user access", e);
+            return false;
+        }
     }
 
     @Override
