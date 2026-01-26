@@ -1,31 +1,53 @@
-# Admin Extensions Feature Flag for XWiki
+# Admin Extensions Feature Flag
 
-## Overview
+This module allows you to enable or disable the **Admin Extensions** section in XWiki via a feature flag.
 
-This project provides a feature flag to hide/show the Extensions section in XWiki Global Administration.
+## 🔒 Problem
 
-## Features
+The Admin Extensions section (XWiki Preferences → Extensions) is powerful but may be confusing for regular admins. This module allows you to **hide and disable** it by default, and enable it only when needed.
 
-- **Feature Flag**: Enable/disable Extensions section via configuration
-- **Security**: Blocks both UI access and direct URL access
-- **Flexible Configuration**: Configure via xwiki.properties, environment variables, or UI
-- **Zero Overhead**: Minimal performance impact
-- **Test Coverage**: Comprehensive unit and integration tests
+## ✅ Features
 
-## Installation
+- [x] Hide Extensions tab in Administration UI
+- [x] Block access via macro `{{extensions}}...{{/extensions}}`
+- [x] Feature flag controlled by:
+    - `xwiki.properties`
+    - Environment variable
+- [x] Respects user rights (only users with `Right.ADMIN` can access when enabled)
 
-### Prerequisites
-- XWiki 15.0+
-- Java 11+
-- Maven 3.6+
+> ❗ Note: Direct URL access (`/xwiki/bin/edit/XWiki/XWikiPreferences?editor=extensions`) cannot be blocked in XWiki 17.10+ due to removal of `RightChecker`. Rely on user rights.
 
-### Quick Installation
+## ⚙️ Configuration
 
-1. **Download the distribution:**
-```bash
-wget https://github.com/xwiki-contrib/featureflag-adminextensions/releases/download/v1.0.0/featureflag-adminextensions-1.0.0.zip
+### Option 1: xwiki.properties
+properties featureflag.adminextensions.enabled=true
 
-**Решаемая задача:**
+### Option 2: Environment variable
+bash XWIKI_FEATUREFLAG_EXTENSIONS_ENABLED=true
+
+> Environment variable has priority.
+
+## 📦 Installation
+
+1. Build the project: bash mvn clean install
+2. Copy `featureflag-adminextensions-core/target/featureflag-adminextensions-core-1.0.0.jar` to `WEB-INF/lib/`
+3. Restart XWiki
+
+## 🧪 Testing
+
+- When disabled:
+    - UI: "Extensions" tab is hidden
+    - Macro: `{{extensions}}` content is not rendered
+- When enabled and user has rights: everything works
+
+## 📚 Used APIs
+
+- `DocumentAccessBridge` — get current user
+- `AuthorizationManager` — check rights
+- `UIExtension` — hide menu item
+- `Macro` — conditional rendering
+
+## **Решаемая задача:**
 Необходимо скрыть раздел Global Administration: Extensions в системе на основе xWiki. Оставить возможность включать через какой-то feature flag(переключатель возможности) в файле настроек.
 
 Критерии приемки:
