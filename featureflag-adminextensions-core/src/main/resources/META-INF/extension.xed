@@ -63,11 +63,6 @@
             <implementation>com.xwiki.featureflag.adminextensions.internal.AdminExtensionsConfiguration</implementation>
         </component>
         <component>
-            <roleType>org.xwiki.security.authorization.RightChecker</roleType>
-            <roleHint>adminExtensions</roleHint>
-            <implementation>com.xwiki.featureflag.adminextensions.internal.AdminExtensionsRightChecker</implementation>
-        </component>
-        <component>
             <roleType>org.xwiki.script.service.ScriptService</roleType>
             <roleHint>adminExtensionsUI</roleHint>
             <implementation>com.xwiki.featureflag.adminextensions.internal.AdminExtensionsUIExtension</implementation>

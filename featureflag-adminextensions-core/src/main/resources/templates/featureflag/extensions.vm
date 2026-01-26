@@ -1,11 +1,13 @@
-## Velocity template for Extensions menu item
+## Velocity template for Extensions menu item - ТОЛЬКО ОТОБРАЖЕНИЕ МЕНЮ
+## 1. Проверяем feature flag
 #if($services.featureflag && $services.featureflag.extensions && $services.featureflag.extensions.isEnabled())
   #set($extensionsEnabled = true)
 #else
   #set($extensionsEnabled = false)
 #end
 
-#if($extensionsEnabled)
+## 2. Если флаг включен И у пользователя есть доступ - показываем пункт меню
+#if($extensionsEnabled && $services.authorization.hasAccess('view', $currentUser, 'XWiki.XWikiExtensions'))
   <li class="admin-menu-item admin-extensions-item">
     <a href="$xwiki.getURL('XWiki.XWikiExtensions', 'view')"
        title="$services.localization.render('admin.extensions.description')">
@@ -14,27 +16,5 @@
     </a>
   </li>
 #else
-  <!-- Extensions admin is disabled by feature flag -->
+  <!-- Extensions admin is disabled by feature flag or user has no access -->
 #end
-
-## JavaScript for dynamic hiding
-<script>
-require(['jquery'], function($) {
-  $(document).ready(function() {
-    #if(!$extensionsEnabled)
-      // Hide Extensions menu items
-      $('a[href*="XWikiExtensions"]').closest('li').hide();
-      $('[data-admin-section="extensions"]').hide();
-
-      // Add CSS class for styling
-      $('body').addClass('extensions-disabled');
-    #end
-  });
-});
-</script>
-
-<style>
-.extensions-disabled .admin-extensions-item {
-  display: none !important;
-}
-</style>

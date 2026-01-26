@@ -37,4 +37,5 @@ public interface AdminExtensionsManager {
      * Useful when configuration changes at runtime.
      */
     void refresh();
+
 }
