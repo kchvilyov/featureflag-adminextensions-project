@@ -44,8 +44,75 @@ bash XWIKI_FEATUREFLAG_EXTENSIONS_ENABLED=true
 
 - `DocumentAccessBridge` — get current user
 - `AuthorizationManager` — check rights
-- `UIExtension` — hide menu item
-- `Macro` — conditional rendering
+# Admin Extensions Feature Flag
+
+This module allows you to enable or disable access to the **Admin Extensions** section in XWiki via a feature flag.
+
+> ⚠️ **Important**: Due to API changes in XWiki 17.10+, this module cannot fully hide the menu item programmatically. Use CSS for UI hiding.
+
+## 🔒 Problem
+
+The Extensions editor (XWiki Preferences → Extensions) is powerful but may be confusing. This module disables it by default and allows enabling only when needed.
+
+## ✅ Features
+
+- [x] Feature flag controlled by:
+  - `xwiki.properties`
+  - Environment variable
+- [x] Blocks content using `{{extensions}}...{{/extensions}}` macro
+- [x] Respects user rights (`Right.ADMIN`)
+- [x] Logs configuration source
+- [ ] Hides menu item (requires CSS)
+
+## ⚙️ Configuration
+
+### Option 1: `xwiki.properties`
+properties featureflag.adminextensions.enabled=true
+
+### Option 2: Environment variable
+bash XWIKI_FEATUREFLAG_EXTENSIONS_ENABLED=true
+
+> Environment variable has priority.
+
+## 🧩 How It Works
+
+| Component | Purpose |
+|---------|--------|
+| `AdminExtensionsConfiguration` | Reads flag from config/ENV |
+| `AdminExtensionsManager.hasAccess()` | Checks flag + user rights |
+| `ExtensionsMacro` | Blocks macro content if access denied |
+| `AdminExtensionsUIExtension` | Registers script service for Velocity |
+
+## 🎨 Hide Menu Item (CSS)
+
+Since `UIExtensionFilter` is not available in XWiki 17.10.2, add this CSS to hide the menu item:
+css /* In Wiki > Presentation > Custom CSS */ #extensions { display: none !important; }
+
+Or via `XWikiPreferences` → "Custom CSS":
+css #extensions { display: none !important; }
+
+## 📦 Installation
+
+1. Build the project:
+   bash mvn clean install
+2. Copy JAR to XWiki:
+   bash cp featureflag-adminextensions-core/target/featureflag-adminextensions-core-1.0.0.jar $TOMCAT/webapps/xwiki/WEB-INF/lib/
+3. Restart Tomcat
+4. Add CSS to hide menu (optional)
+
+## 🧪 Testing
+
+- When disabled:
+  - `{{extensions}}Content{{/extensions}}` → nothing rendered
+  - Direct URL access → possible, but relies on user rights
+- When enabled + admin rights → everything works
+
+## 📚 Used APIs
+
+- `DocumentAccessBridge` – get current user
+- `AuthorizationManager` – check rights
+- `ScriptService` – expose to Velocity
+- `Macro` – conditional rendering
 
 ## **Решаемая задача:**
 Необходимо скрыть раздел Global Administration: Extensions в системе на основе xWiki. Оставить возможность включать через какой-то feature flag(переключатель возможности) в файле настроек.
@@ -73,3 +140,16 @@ Extensions должен вернуться без ручного восстан�
 
 + Покрыть тестами 
 + короткая документация “как включать/выключать”.
+
+✅ Задача: Скрыть раздел Global Administration → Extensions в XWiki 17.10.2
+📌 Итоговое решение
+В XWiki 17.10.2:
+
+❌ Нельзя использовать RightChecker — удалён
+❌ Нельзя использовать UIExtensionFilter — нет в org.xwiki.uiextension
+✅ Можно использовать:
+
+Feature flag (xwiki.properties / ENV)
+Макрос {{extensions}}...{{/extensions}}
+Проверку прав через AuthorizationManager
+CSS для скрытия пункта меню
