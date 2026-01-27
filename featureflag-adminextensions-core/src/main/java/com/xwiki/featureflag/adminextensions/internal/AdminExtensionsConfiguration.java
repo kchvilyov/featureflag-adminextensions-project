@@ -43,6 +43,7 @@ public class AdminExtensionsConfiguration implements AdminExtensionsManager {
     @Override
     public boolean isEnabled() {
         if (enabledCache == null) {
+            logger.debug("Regresh");
             refresh();
         }
         return enabledCache;
@@ -58,15 +59,18 @@ public class AdminExtensionsConfiguration implements AdminExtensionsManager {
 
     @Override
     public boolean hasAccess() {
+        logger.debug("Check access");
         if (!isEnabled()) {
+            logger.warn("Not Enabled");
             return false;
         }
         try {
             DocumentReference userRef = documentAccessBridge.getCurrentUserReference();
             DocumentReference extensionsPage = new DocumentReference("xwiki", "XWiki", "XWikiExtensions");
+            logger.debug("Check access to {} for user {}", extensionsPage, userRef);
             return authorizationManager.hasAccess(Right.ADMIN, userRef, extensionsPage);
         } catch (Exception e) {
-            logger.warn("Could not check user access", e);
+            logger.error("Could not check user access", e);
             return false;
         }
     }
