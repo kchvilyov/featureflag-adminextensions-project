@@ -2,7 +2,6 @@ package com.xwiki.featureflag.adminextensions.internal;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -23,12 +22,12 @@ import com.xwiki.featureflag.adminextensions.AdminExtensionsManager;
 
 /**
  * A macro that conditionally renders content based on the Admin Extensions feature flag.
- * Uses a dedicated parameters class to avoid IllegalAccessException.
+ * Now uses ExtensionsMacroParameters as configuration type.
  */
 @Component
 @Named("extensions")
 @Singleton
-public class ExtensionsMacro implements Macro<Void> {
+public class ExtensionsMacro implements Macro<ExtensionsMacroParameters> {
 
     private static final String MACRO_NAME = "extensions";
     private static final MacroId MACRO_ID = new MacroId("extensions");
@@ -40,8 +39,8 @@ public class ExtensionsMacro implements Macro<Void> {
     private Logger logger;
 
     @Override
-    public List<Block> execute(Void configuration, String content, MacroTransformationContext context)
-        throws MacroExecutionException
+    public List<Block> execute(ExtensionsMacroParameters configuration, String content,
+                               MacroTransformationContext context) throws MacroExecutionException
     {
         logger.debug("Macro execute");
         if (extensionsManager.hasAccess()) {
@@ -104,7 +103,7 @@ public class ExtensionsMacro implements Macro<Void> {
             }
 
             public Class<?> getConfigurationClass() {
-                return Void.class;
+                return ExtensionsMacroParameters.class;
             }
 
             public boolean isInlineAllowed() {
@@ -115,8 +114,8 @@ public class ExtensionsMacro implements Macro<Void> {
                 return true;
             }
 
-            public Map<String, org.xwiki.rendering.macro.descriptor.ParameterDescriptor> getParameterDescriptorMap() {
-                return Collections.emptyMap();
+            public java.util.Map<String, org.xwiki.rendering.macro.descriptor.ParameterDescriptor> getParameterDescriptorMap() {
+                return java.util.Collections.emptyMap();
             }
 
             public Class<?> getParametersBeanClass() {
