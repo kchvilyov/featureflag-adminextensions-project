@@ -98,14 +98,12 @@ public class ExtensionsMacro implements Macro<Void> {
                         return false;
                     }
 
-                    // Убран @Override — если интерфейс не требует getDescription()
                     public String getDescription() {
                         return "Content of the extensions conditional block.";
                     }
                 };
             }
 
-            // Убраны @Override — чтобы избежать ошибок компиляции
             public Class<?> getConfigurationClass() {
                 return Void.class;
             }
@@ -123,7 +121,7 @@ public class ExtensionsMacro implements Macro<Void> {
             }
 
             public Class<?> getParametersBeanClass() {
-                return null;
+                return Void.class;
             }
 
             public boolean isCached() {
