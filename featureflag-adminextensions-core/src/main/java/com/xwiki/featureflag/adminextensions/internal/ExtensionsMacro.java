@@ -1,5 +1,6 @@
 package com.xwiki.featureflag.adminextensions.internal;
 
+import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,19 +11,23 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rendering.block.Block;
+import org.xwiki.rendering.block.MacroBlock;
+import org.xwiki.rendering.block.XDOM;
 import org.xwiki.rendering.macro.Macro;
 import org.xwiki.rendering.macro.MacroExecutionException;
 import org.xwiki.rendering.macro.MacroId;
 import org.xwiki.rendering.macro.descriptor.ContentDescriptor;
 import org.xwiki.rendering.macro.descriptor.MacroDescriptor;
+import org.xwiki.rendering.parser.ParseException;
+import org.xwiki.rendering.parser.Parser;
 import org.xwiki.rendering.syntax.Syntax;
 import org.xwiki.rendering.transformation.MacroTransformationContext;
+import org.xwiki.rendering.transformation.TransformationContext;
 
 import com.xwiki.featureflag.adminextensions.AdminExtensionsManager;
 
 /**
  * A macro that conditionally renders content based on the Admin Extensions feature flag.
- * Now uses ExtensionsMacroParameters as configuration type.
  */
 @Component
 @Named("extensions")
@@ -38,17 +43,33 @@ public class ExtensionsMacro implements Macro<ExtensionsMacroParameters> {
     @Inject
     private Logger logger;
 
+    @Inject
+    @Named("xwiki/2.1")
+    private Parser xwikiParser;
+
     @Override
     public List<Block> execute(ExtensionsMacroParameters configuration, String content,
                                MacroTransformationContext context) throws MacroExecutionException
     {
-        logger.debug("Macro execute");
-        if (extensionsManager.hasAccess()) {
-            logger.warn("Continue normal rendering");
-            return null;
-        } else {
-            logger.warn("Render nothing");
+        logger.debug("Executing ExtensionsMacro for content: {}", content);
+
+        if (!extensionsManager.hasAccess()) {
+            logger.warn("Access denied. Rendering nothing.");
             return Collections.emptyList();
+        }
+
+        logger.warn("Continue normal rendering");
+        TransformationContext transformationContext = context.getTransformationContext();
+        Syntax originalSyntax = transformationContext.getSyntax();
+
+        try {
+            transformationContext.setSyntax(Syntax.XWIKI_2_1);
+            logger.debug("Parsing content with XWiki 2.1 syntax");
+            return xwikiParser.parse(new StringReader(content)).getChildren();
+        } catch (ParseException e) { // ✅ Ловим org.xwiki.rendering.parser.ParseException
+            throw new MacroExecutionException("Failed to parse macro content", e);
+        } finally {
+            transformationContext.setSyntax(originalSyntax);
         }
     }
 
@@ -88,7 +109,7 @@ public class ExtensionsMacro implements Macro<ExtensionsMacroParameters> {
                     }
 
                     public boolean isContentParsed() {
-                        return true;
+                        return false;
                     }
 
                     @Override
@@ -96,6 +117,7 @@ public class ExtensionsMacro implements Macro<ExtensionsMacroParameters> {
                         return false;
                     }
 
+                    @Override
                     public String getDescription() {
                         return "Content of the extensions conditional block.";
                     }
@@ -114,12 +136,13 @@ public class ExtensionsMacro implements Macro<ExtensionsMacroParameters> {
                 return true;
             }
 
+            @Override
             public java.util.Map<String, org.xwiki.rendering.macro.descriptor.ParameterDescriptor> getParameterDescriptorMap() {
                 return java.util.Collections.emptyMap();
             }
 
+            @Override
             public Class<?> getParametersBeanClass() {
-                //Используем пустой класс с публичным конструктором
                 return ExtensionsMacroParameters.class;
             }
 
