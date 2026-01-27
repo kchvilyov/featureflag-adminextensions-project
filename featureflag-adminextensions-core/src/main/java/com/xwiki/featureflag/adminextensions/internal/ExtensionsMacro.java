@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.jspecify.annotations.NonNull;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rendering.block.Block;
 import org.xwiki.rendering.macro.Macro;
@@ -34,14 +33,14 @@ public class ExtensionsMacro implements Macro<Void> {
 
     @Override
     public List<Block> execute(Void configuration, String content, MacroTransformationContext context)
-        throws MacroExecutionException
+            throws MacroExecutionException
     {
-        // If access is allowed, let XWiki continue processing the content
-        // If not, return empty list -> nothing rendered
+        // Если доступ разрешён — продолжаем обработку
         if (extensionsManager.hasAccess()) {
-            return null; // Continue normal processing
+            return null; // Продолжить (XWiki сам обработает content)
         } else {
-            return Collections.emptyList(); // Render nothing
+            // ❌ возвращаем пустой список → ничего не отображается
+            return Collections.emptyList();
         }
     }
 
@@ -61,7 +60,7 @@ public class ExtensionsMacro implements Macro<Void> {
     }
 
     @Override
-    public int compareTo(@NonNull Macro<?> o) {
+    public int compareTo(Macro<?> o) {
         return 0;
     }
 }
