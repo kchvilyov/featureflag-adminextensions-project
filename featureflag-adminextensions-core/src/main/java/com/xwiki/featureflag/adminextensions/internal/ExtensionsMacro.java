@@ -18,10 +18,7 @@ import com.xwiki.featureflag.adminextensions.AdminExtensionsManager;
 
 /**
  * A macro that conditionally renders content based on the Admin Extensions feature flag.
- * Usage:
- * {{extensions}}
- *   Content visible only if feature is enabled and user has access.
- * {{/extensions}}
+ * Returns null from getDescriptor() to avoid complex descriptor setup in XWiki 17.10+
  */
 @Component
 @Named("extensions")
@@ -35,13 +32,16 @@ public class ExtensionsMacro implements Macro<Void> {
     public List<Block> execute(Void configuration, String content, MacroTransformationContext context)
             throws MacroExecutionException
     {
-        // Если доступ разрешён — продолжаем обработку
         if (extensionsManager.hasAccess()) {
-            return null; // Продолжить (XWiki сам обработает content)
+            return null; // Continue normal rendering
         } else {
-            // ❌ возвращаем пустой список → ничего не отображается
-            return Collections.emptyList();
+            return Collections.emptyList(); // Render nothing
         }
+    }
+
+    @Override
+    public boolean supportsInlineMode() {
+        return true;
     }
 
     @Override
@@ -51,12 +51,13 @@ public class ExtensionsMacro implements Macro<Void> {
 
     @Override
     public MacroDescriptor getDescriptor() {
+        // В XWiki 17.10+ реализация MacroDescriptor слишком сложная
+        // и требует точного соответствия изменённым API.
+        // Мы возвращаем null, потому что:
+        // - Макрос не имеет параметров
+        // - Не используется в рефакторинге
+        // - Главное — блокировка контента
         return null;
-    }
-
-    @Override
-    public boolean supportsInlineMode() {
-        return true;
     }
 
     @Override
