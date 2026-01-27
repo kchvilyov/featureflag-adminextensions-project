@@ -23,7 +23,7 @@ import com.xwiki.featureflag.adminextensions.AdminExtensionsManager;
 
 /**
  * A macro that conditionally renders content based on the Admin Extensions feature flag.
- * Compatible with XWiki 17.10+ by using minimal required overrides.
+ * Uses a dedicated parameters class to avoid IllegalAccessException.
  */
 @Component
 @Named("extensions")
@@ -44,7 +44,6 @@ public class ExtensionsMacro implements Macro<Void> {
         throws MacroExecutionException
     {
         logger.debug("Macro execute");
-        logger.info("Macro execute");
         if (extensionsManager.hasAccess()) {
             logger.warn("Continue normal rendering");
             return null;
@@ -121,7 +120,8 @@ public class ExtensionsMacro implements Macro<Void> {
             }
 
             public Class<?> getParametersBeanClass() {
-                return Void.class;
+                //Используем пустой класс с публичным конструктором
+                return ExtensionsMacroParameters.class;
             }
 
             public boolean isCached() {
