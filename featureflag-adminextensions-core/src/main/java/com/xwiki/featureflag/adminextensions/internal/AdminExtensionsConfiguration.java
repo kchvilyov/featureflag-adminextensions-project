@@ -20,7 +20,9 @@ import com.xwiki.featureflag.adminextensions.AdminExtensionsManager;
 @Component
 @Singleton
 public class AdminExtensionsConfiguration implements AdminExtensionsManager {
-
+    static {
+        System.out.println("✅ AdminExtensionsConfiguration LOADED");
+    }
     private static final String CONFIG_PROPERTY = "featureflag.adminextensions.enabled";
     private static final String ENV_PROPERTY = "XWIKI_FEATUREFLAG_EXTENSIONS_ENABLED";
 
