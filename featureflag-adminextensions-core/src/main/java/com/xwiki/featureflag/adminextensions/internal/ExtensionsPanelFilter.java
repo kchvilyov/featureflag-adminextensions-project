@@ -28,6 +28,9 @@ import com.xwiki.featureflag.adminextensions.AdminExtensionsManager;
 @Singleton
 public class ExtensionsPanelFilter implements UIExtensionFilter
 {
+    static {
+        System.out.println("✅ DEBUG: ExtensionsPanelFilter class loaded");
+    }
     private static final String EXTENSIONS_PANE_ID = "org.xwiki.platform.extension";
     private static final String EXTENSIONS_PANEL_NAME = "Extensions";
 
