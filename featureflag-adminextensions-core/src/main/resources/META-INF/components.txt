@@ -1,3 +1,5 @@
-com.xwiki.featureflag.adminextensions.internal.AdminExtensionsConfiguration
 com.xwiki.featureflag.adminextensions.internal.ExtensionsMacro
-com.xwiki.featureflag.adminextensions.internal.AdminExtensionsUIExtension
+com.xwiki.featureflag.adminextensions.internal.ExtensionsMacroParameters
+com.xwiki.featureflag.adminextensions.internal.ExtensionsPanelFilter
+com.xwiki.featureflag.adminextensions.internal.AdminExtensionsConfiguration
+com.xwiki.featureflag.adminextensions.AdminExtensionsManager

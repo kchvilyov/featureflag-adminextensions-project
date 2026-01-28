@@ -74,6 +74,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.xwiki.platform</groupId>
+            <artifactId>xwiki-platform-extension-api</artifactId>
+            <version>${xwiki.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Configuration -->
         <dependency>
             <groupId>org.xwiki.platform</groupId>
