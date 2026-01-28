@@ -16,11 +16,12 @@ import com.xwiki.featureflag.adminextensions.AdminExtensionsManager;
 
 /**
  * Hides the Extensions admin panel when the feature flag is disabled.
- * Uses correct UIExtensionFilter signature and proper parameter types.
- *
- * Ключ adminsections — стандартный для административных панелей
- * Панель "Extensions" передаёт параметр id=Extensions или id=org.xwiki.platform.extension
- * Мы удаляем её, если extensionsManager.hasAccess() == false
+ * Implements the correct UIExtensionFilter.filter() signature with only (List, String...).
+ * Как это работает
+ * XWiki вызывает filter(extensions, "adminsections")
+ * Мы читаем parameters[0] → "adminsections"
+ * Проверяем, нужно ли фильтровать
+ * Удаляем панель Extensions, если флаг отключён
  */
 @Component
 @Named("extensionsPanelFilter")
@@ -37,34 +38,36 @@ public class ExtensionsPanelFilter implements UIExtensionFilter
     private Logger logger;
 
     @Override
-    public List<UIExtension> filter(List<UIExtension> extensions, String key, String... parameters)
+    public List<UIExtension> filter(List<UIExtension> extensions, String... parameters)
     {
-        // Логируем ключ для отладки
-        logger.debug("UIExtensionFilter invoked with key: [{}]", key);
-        for (String param : parameters) {
-            logger.debug("  Parameter: {}", param);
+        // Первый параметр — это ключ (например, "adminsections")
+        if (parameters.length == 0) {
+            return extensions;
         }
 
-        // Проверяем, нужно ли фильтровать панели
+        String key = parameters[0];
+        logger.debug("UIExtensionFilter invoked with key: [{}]", key);
+
+        // Фильтруем только административные секции
         if (!"adminsections".equals(key)) {
             return extensions;
         }
 
-        // Если флаг отключён — удаляем панель
+        // Если доступ запрещён — удаляем панель Extensions
         if (!extensionsManager.hasAccess()) {
             logger.warn("Hiding Extensions panel: feature flag is disabled");
             return extensions.stream()
-                .filter(ext -> {
-                    Map<String, String> params = ext.getParameters();
-                    String id = params.get("id");
-                    boolean isExtensions = EXTENSIONS_PANEL_NAME.equals(id) ||
-                                           EXTENSIONS_PANE_ID.equals(id);
-                    if (isExtensions) {
-                        logger.info("Blocked Extensions panel (id=[{}]) due to disabled feature flag", id);
-                    }
-                    return !isExtensions;
-                })
-                .toList();
+                    .filter(extension -> {
+                        Map<String, String> params = extension.getParameters();
+                        String id = params.get("id");
+                        boolean isExtensions = EXTENSIONS_PANEL_NAME.equals(id) ||
+                                EXTENSIONS_PANE_ID.equals(id);
+                        if (isExtensions) {
+                            logger.info("Blocked Extensions panel (id=[{}]) due to disabled feature flag", id);
+                        }
+                        return !isExtensions;
+                    })
+                    .toList();
         }
 
         return extensions;
