@@ -40,34 +40,39 @@ public class ExtensionsPanelFilter implements UIExtensionFilter
     @Override
     public List<UIExtension> filter(List<UIExtension> extensions, String... parameters)
     {
-        // Первый параметр — это ключ (например, "adminsections")
+        logger.warn("✅ ExtensionsPanelFilter.filter() invoked");
+        if (parameters.length > 0) {
+            logger.debug("  Key: [{}]", parameters[0]);
+            for (int i = 1; i < parameters.length; i++) {
+                logger.debug("  Param[{}]: [{}]", i, parameters[i]);
+            }
+        } else {
+            logger.debug("  No parameters passed");
+        }
+
         if (parameters.length == 0) {
             return extensions;
         }
 
         String key = parameters[0];
-        logger.debug("UIExtensionFilter invoked with key: [{}]", key);
-
-        // Фильтруем только административные секции
         if (!"adminsections".equals(key)) {
             return extensions;
         }
 
-        // Если доступ запрещён — удаляем панель Extensions
         if (!extensionsManager.hasAccess()) {
-            logger.warn("Hiding Extensions panel: feature flag is disabled");
+            logger.warn("🔒 Hiding Extensions panel: feature flag is disabled");
             return extensions.stream()
-                    .filter(extension -> {
-                        Map<String, String> params = extension.getParameters();
-                        String id = params.get("id");
-                        boolean isExtensions = EXTENSIONS_PANEL_NAME.equals(id) ||
-                                EXTENSIONS_PANE_ID.equals(id);
-                        if (isExtensions) {
-                            logger.info("Blocked Extensions panel (id=[{}]) due to disabled feature flag", id);
-                        }
-                        return !isExtensions;
-                    })
-                    .toList();
+                .filter(extension -> {
+                    Map<String, String> params = extension.getParameters();
+                    String id = params.get("id");
+                    boolean isExtensions = "Extensions".equals(id) ||
+                                           "org.xwiki.platform.extension".equals(id);
+                    if (isExtensions) {
+                        logger.info("❌ Blocked Extensions panel (id=[{}])", id);
+                    }
+                    return !isExtensions;
+                })
+                .toList();
         }
 
         return extensions;
