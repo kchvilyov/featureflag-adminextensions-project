@@ -142,14 +142,11 @@ Extensions должен вернуться без ручного восстан�
 + короткая документация “как включать/выключать”.
 
 ✅ Задача: Скрыть раздел Global Administration → Extensions в XWiki 17.10.2
-📌 Итоговое решение
-В XWiki 17.10.2:
+📌 Текущее состояние: 
+Проверена возможность использовать UIExtensionFilter. 
+Не удалось исползовать, так как воплощающий его класс не загружается во время выполнения.
 
-❌ Нельзя использовать RightChecker — удалён
-❌ Нельзя использовать UIExtensionFilter — нет в org.xwiki.uiextension
 ✅ Можно использовать:
-
 Feature flag (xwiki.properties / ENV)
-Макрос {{extensions}}...{{/extensions}}
-Проверку прав через AuthorizationManager
-CSS для скрытия пункта меню
+Макрос {{extensions}}...{{/extensions}} для скрытия пункта меню.
+Проверку прав через AuthorizationManager.
